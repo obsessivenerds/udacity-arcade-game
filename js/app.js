@@ -5,7 +5,7 @@ class Entity {
     this.x = 2;
     this.y = 5;
   }
-//Define off-screen positions to update position
+//Define off-screen positions to update position with
   update(dt) {
     this.offScreenX = this.x > 5;
     this.offScreenY = this.y < 1;
