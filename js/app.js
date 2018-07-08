@@ -5,15 +5,17 @@ class Entity {
     this.x = 2;
     this.y = 5;
   }
-//Define off-screen positions to update position with
+//Define off-screen positions to update position
   update(dt) {
     this.offScreenX = this.x > 5;
     this.offScreenY = this.y < 1;
   }
 
 //render method to draw images
+//Added offset to match offsets in engine.js
+//Made alignment adjustment to y-axis offset
   render() {
-    ctx.drawImage(Resources.get(this.sprite), this.x * 101, this.y * 80);
+    ctx.drawImage(Resources.get(this.sprite), this.x * 101, this.y * 78);
   }
 
 //Collision checks if both entities are in the same y-axis first, then if they occupy the same x-axis block
@@ -42,7 +44,7 @@ class Player extends Entity {
   update(dt) {
     super.update();
     if (this.offScreenY && !this.moving && !this.win) {
-      alert("Win");
+      modal.style.display = 'block';
       this.win = true;
     }
   }
@@ -74,16 +76,21 @@ class Player extends Entity {
   }
 }
 
-//Enemy class with inheritance from Entity
+//Enemy class with inheritance from Entity class
 class Enemy extends Entity {
   constructor(x,y) {
     super();
     this.sprite += 'enemy-bug.png';
     this.x = x;
     this.y = y;
+    //Set speed to random speed for enemies
+    this.speed = Math.random() * 3;
+
   }
+  
   update(dt) {
     super.update();
+    this.x += this.speed * dt;
     if (this.offScreenX) {
       this.x = -1;
     }
@@ -93,27 +100,54 @@ class Enemy extends Entity {
   }
 }
 
-// Enemies our player must avoid
-
-
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
-
-
-// Draw the enemy on the screen, required method for game
-
-
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
-
-
-
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 const player = new Player();
-const allEnemies = [...Array(3)].map((_,i)=> new Enemy(0, i+1));
+const enemyOne = new Enemy(-1, 1);
+const enemyTwo = new Enemy(-3, 2);
+const enemyThree = new Enemy(-2, 3);
+const allEnemies = [enemyOne, enemyTwo, enemyThree];
+
+//MODAL FOR WINNING THE GAME
+
+//Modal script based on code from https://www.w3schools.com/howto/howto_css_modals.asp
+
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+//Event listener for the Play Again button on the modal
+
+let button = document.querySelector('.button-start');
+
+button.addEventListener('click', function(event) {
+  if (event.target == button) {
+      modal.style.display = "none";
+      window.location.reload(true);
+  }
+});
+
+//Event listener for the New Game button
+let restart = document.querySelector('.restart');
+
+restart.addEventListener('click', function(event) {
+  window.location.reload(true);
+});
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -127,3 +161,7 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+/*A big thanks goes to Slack name @Rodrick for the getting started
+video he posted at https://zoom.us/recording/play/aulotDlzKFegQFIJTaTzKgWvNkVsYtlwO454vL1UPE1Cm6lOUBQCtfVurPOIAGAS?startTime=1529542978000
+This video really helped me organize the classes and structure */
